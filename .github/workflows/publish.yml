@@ -36,6 +36,17 @@ jobs:
           -Dplugin.output.directory=${{ github.workspace }}/out
           -pl build -am
 
+      # Diagnostyka: gdy build padnie, wypisz sygnatury klas NMS, których kod używa
+      - name: Dump NMS signatures (on failure)
+        if: failure()
+        run: |
+          JAR=$(ls ~/.m2/repository/ca/bkaw/paper-nms/*/paper-nms-*.jar | head -n1)
+          echo "Using $JAR"
+          for c in net.minecraft.world.entity.EntitySpawnRequest net.minecraft.world.entity.UpdateInterval net.minecraft.server.level.ServerEntity net.minecraft.world.entity.EntityType net.minecraft.server.level.ServerPlayer; do
+            echo "=== $c ==="
+            javap -cp "$JAR" -public "$c" | grep -E "class|interface|record|enum|static|ServerEntity\(|ServerPlayer\(|create|of\(|UpdateInterval|EntitySpawnRequest|getServer|server" || true
+          done
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
