@@ -64,11 +64,6 @@ public class VersionControllerFactory {
                     className = "org.mynion.knockoutplugin.utils.VersionController_v1_19_4";
                     break;
                 default:
-                    // Paper 26.x nie używa już sufiksu -R0.1-SNAPSHOT, wersja ma postać np. "26.3.build.248-stable"
-                    if (version.equals("26.3") || version.startsWith("26.3.") || version.startsWith("26.3-")) {
-                        className = "org.mynion.knockoutplugin.utils.VersionController_v26_3";
-                        break;
-                    }
                     getServer().getPluginManager().disablePlugin(Knockout.getPlugin());
                     System.out.println("Unsupported server version: " + version);
             }
