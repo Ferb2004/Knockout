@@ -147,7 +147,7 @@ public class VersionController_v26_3 implements VersionController {
         if (parrot.isEmpty()) return;
 
         ProblemReporter.ScopedCollector problemreporter_j = new ProblemReporter.ScopedCollector(sp.problemPath(), LogUtils.getLogger());
-        Optional<net.minecraft.world.entity.Entity> left = EntityType.create(TagValueInput.create(problemreporter_j.forChild(() -> ".shoulder"), sp.level().registryAccess(), parrot), sp.level(), EntitySpawnReason.NATURAL);
+        Optional<net.minecraft.world.entity.Entity> left = EntityType.create(TagValueInput.create(problemreporter_j.forChild(() -> ".shoulder"), sp.level().registryAccess(), parrot), sp.level(), new EntitySpawnRequest(EntitySpawnReason.NATURAL, false));
 
         if (left.isEmpty()) return;
 
@@ -185,7 +185,7 @@ public class VersionController_v26_3 implements VersionController {
         return switch (packetType) {
             case ANIMATE -> new ClientboundHurtAnimationPacket(mannequin.getId(), 0);
             case ADD_ENTITY ->
-                    new ClientboundAddEntityPacket(mannequin, new ServerEntity(level, mannequin, 20, false, null, null));
+                    new ClientboundAddEntityPacket(mannequin, new ServerEntity(level, mannequin, UpdateInterval.periodic(20), false, null, null));
             case INFO_UPDATE ->
                     new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, mannequin);
             case SET_ENTITY_DATA ->
