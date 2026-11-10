@@ -23,14 +23,28 @@ jobs:
           java-version: '25'
           cache: maven
 
+      # libraries.minecraft.net nie ma maven-metadata.xml (zakresy wersji nie działają),
+      # więc dokładne wersje bibliotek Mojanga bierzemy z manifestu Minecraft 26.3.
+      - name: Resolve Mojang library versions
+        run: |
+          MC=26.3
+          URL=$(curl -fsSL https://piston-meta.mojang.com/mc/game/version_manifest_v2.json | jq -r --arg v "$MC" '.versions[] | select(.id==$v) | .url')
+          [ -n "$URL" ] || { echo "Nie znaleziono wersji $MC w manifeście Mojanga"; exit 1; }
+          JSON=$(curl -fsSL "$URL")
+          AUTHLIB=$(echo "$JSON" | jq -r '[.libraries[].name | select(startswith("com.mojang:authlib:"))][0] | split(":")[2]')
+          DFU=$(echo "$JSON" | jq -r '[.libraries[].name | select(startswith("com.mojang:datafixerupper:"))][0] | split(":")[2]')
+          echo "authlib=$AUTHLIB datafixerupper=$DFU"
+          [ -n "$AUTHLIB" ] && [ "$AUTHLIB" != "null" ] && [ -n "$DFU" ] && [ "$DFU" != "null" ]
+          echo "MOJANG_LIBS=-Dauthlib.version=$AUTHLIB -Ddatafixerupper.version=$DFU" >> "$GITHUB_ENV"
+
       # Jednorazowa inicjalizacja NMS (mapowania Mojanga) dla modułu 26.3.
       # Jeśli wtyczka ma inną nazwę celu w Twojej wersji, popraw tę linię.
       - name: Init Paper NMS
-        run: mvn -B ca.bkaw:paper-nms-maven-plugin:1.5:init -pl versions/26.3
+        run: mvn -B $MOJANG_LIBS ca.bkaw:paper-nms-maven-plugin:1.5:init -pl versions/26.3
 
       - name: Build plugin (Paper 26.3)
         run: >
-          mvn -B clean package
+          mvn -B clean package $MOJANG_LIBS
           -P build-one-version
           -Doutput.version=26.3
           -Dplugin.output.directory=${{ github.workspace }}/out
