@@ -20,6 +20,8 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <!-- Zakres = najnowszy build 26.3. Możesz wpisać dokładny build, np. 26.3.build.8-alpha -->
+        <!-- authlib.version i datafixerupper.version podaje workflow (-D...), bo biorą się z manifestu Mojanga dla 26.3.
+             Lokalnie ustaw je w linii poleceń albo wpisz tu na stałe. -->
         <paper.version>[26.3.build.1,26.3.build.9999)</paper.version>
     </properties>
 
@@ -82,13 +84,13 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <version>[6.0.0,)</version>
+            <version>${authlib.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>datafixerupper</artifactId>
-            <version>[8.0.0,)</version>
+            <version>${datafixerupper.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
