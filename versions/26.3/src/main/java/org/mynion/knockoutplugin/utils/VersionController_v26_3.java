@@ -76,7 +76,7 @@ public class VersionController_v26_3 implements VersionController {
         ClientboundSetPlayerTeamPacket removePacket = ClientboundSetPlayerTeamPacket.createRemovePacket(team);
         ClientboundSetPlayerTeamPacket createPacket = ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
         MinecraftServer server = MinecraftServer.getServer();
-        List<ServerPlayer> onlinePlayers = server.getPlayerList().players;
+        List<ServerPlayer> onlinePlayers = server.getPlayerList().getPlayers();
         onlinePlayers.forEach(player -> player.connection.send(removePacket));
         onlinePlayers.forEach(player -> player.connection.send(createPacket));
     }
@@ -170,7 +170,7 @@ public class VersionController_v26_3 implements VersionController {
     public void broadcastPacket(NpcModel npc, PacketType packetType) {
         Packet<?> packet = createPacket((Npc) npc, packetType);
         MinecraftServer server = MinecraftServer.getServer();
-        List<ServerPlayer> onlinePlayers = server.getPlayerList().players;
+        List<ServerPlayer> onlinePlayers = server.getPlayerList().getPlayers();
         onlinePlayers.forEach(p -> p.connection.send(packet));
     }
 
@@ -220,21 +220,8 @@ public class VersionController_v26_3 implements VersionController {
 
         CraftPlayer cp = (CraftPlayer) p;
         ServerPlayer sp = cp.getHandle();
-        MinecraftServer server = null;
-        // Solves a problem with private "server" attribute on experimental paper 1.21.10
-        try {
-            Field field = ServerPlayer.class.getDeclaredField("server");
-            if (field.canAccess(sp)) {
-                server = sp.server;
-            } else {
-                field.setAccessible(true);
-                server = (MinecraftServer) field.get(sp);
-            }
-        } catch (NoSuchFieldException e1) {
-            server = sp.server;
-        } catch (Exception e2) {
-            e2.printStackTrace();
-        }
+        // W 26.x pole ServerPlayer#server jest prywatne - bierzemy serwer statycznie
+        MinecraftServer server = MinecraftServer.getServer();
         ServerLevel level = sp.level();
 
         UUID mannequinUUID = UUID.randomUUID();
