@@ -19,8 +19,8 @@
         <maven.compiler.release>25</maven.compiler.release>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <!-- Ustaw na dokładny build z https://repo.papermc.io (np. 26.3.build.143-beta) -->
-        <paper.version>26.3.build.+</paper.version>
+        <!-- Zakres = najnowszy build 26.3. Możesz wpisać dokładny build, np. 26.3.build.8-alpha -->
+        <paper.version>[26.3.build.1,26.3.build.9999)</paper.version>
     </properties>
 
     <repositories>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
-            <version>${project.artifactId}-SNAPSHOT</version>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
